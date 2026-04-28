@@ -207,7 +207,7 @@ export function HowWeWork() {
     <section
       id="how-we-work"
       ref={sectionRef}
-      className="relative h-[700vh] w-full bg-base-500"
+      className="relative h-[400vh] md:h-[700vh] w-full bg-base-500"
     >
       <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-12 lg:px-24 overflow-hidden gap-6 md:gap-[24px] bg-base-500">
 
@@ -250,13 +250,13 @@ export function HowWeWork() {
                 }`}
             >
               <div className="flex flex-col">
-                <span className="text-[80px] md:text-[110px] font-[800] text-base-400 leading-[0.95] select-none tracking-tight">
+                <span className="text-[clamp(2.5rem,14vw,7rem)] md:text-[110px] font-[800] text-base-400 leading-[0.95] select-none tracking-tight">
                   {stage.num}
                 </span>
-                <h3 className="text-[60px] md:text-[96px] font-[800] text-base-100 leading-[1.0] tracking-tight">
+                <h3 className="text-[clamp(2rem,11vw,5rem)] md:text-[96px] font-[800] text-base-100 leading-[1.0] tracking-tight">
                   {stage.title}
                 </h3>
-                <p className="mt-10 text-[18px] md:text-[22px] leading-[1.5] text-base-250 max-w-[480px] font-normal">
+                <p className="mt-3 md:mt-10 text-[15px] md:text-[22px] leading-[1.5] text-base-250 max-w-[480px] font-normal">
                   {stage.desc}
                 </p>
               </div>
