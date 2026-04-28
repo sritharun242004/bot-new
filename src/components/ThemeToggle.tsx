@@ -47,9 +47,11 @@ export function ThemeToggle() {
     if (saved === "light") {
       setIsDark(false);
       applyTheme(lightTheme);
+      document.documentElement.dataset.theme = "light";
       document.documentElement.style.setProperty("--map-filter", "contrast(1.3) brightness(1.1)");
       document.documentElement.style.setProperty("--map-blend", "multiply");
     } else {
+      document.documentElement.dataset.theme = "dark";
       document.documentElement.style.setProperty("--map-filter", "invert(1) contrast(1.5) brightness(1.2)");
       document.documentElement.style.setProperty("--map-blend", "screen");
     }
@@ -59,6 +61,7 @@ export function ThemeToggle() {
     const next = !isDark;
     setIsDark(next);
     applyTheme(next ? darkTheme : lightTheme);
+    document.documentElement.dataset.theme = next ? "dark" : "light";
     // Map filter: invert in dark mode so dark lines become light
     document.documentElement.style.setProperty(
       "--map-filter",

@@ -1,21 +1,9 @@
 import type { Metadata } from "next";
-import { Manrope, Outfit } from "next/font/google";
 import "./globals.css";
 import { LenisProvider } from "@/components/LenisProvider";
 import { MenuToggle } from "@/components/MenuToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-manrope",
-});
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["800", "900"],
-  variable: "--font-outfit",
-});
+import { PageTransition } from "@/components/PageTransition";
 
 export const metadata: Metadata = {
   title: "The Bot Company | AI-Powered Bots & Automation Systems",
@@ -29,10 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${manrope.variable} ${outfit.variable} antialiased`}>
+    <html lang="en" className="antialiased dark">
       <body className="min-h-screen font-[family-name:var(--font-manrope)]">
         <LenisProvider>
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
           <ThemeToggle />
           <MenuToggle />
         </LenisProvider>

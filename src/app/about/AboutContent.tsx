@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useRef, useState, useEffect } from "react";
 import { RevealText } from "@/components/RevealText";
 import { useReveal } from "@/hooks/useReveal";
 
@@ -19,115 +20,318 @@ const journey = [
 ];
 
 const tools = [
-  { name: "OpenAI", category: "LLM PROVIDER" },
-  { name: "LangChain", category: "ORCHESTRATION" },
-  { name: "Next.js", category: "FRONTEND" },
-  { name: "Python", category: "AI & BACKEND" },
-  { name: "AWS", category: "CLOUD INFRA" },
-  { name: "Pinecone", category: "VECTOR SEARCH" },
+  { name: "OpenAI", category: "LLM PROVIDER", image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=400&q=80" },
+  { name: "LangChain", category: "ORCHESTRATION", image: "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=400&q=80" },
+  { name: "Next.js", category: "FRONTEND", image: "https://images.unsplash.com/photo-1618477388954-7852f32655ec?w=400&q=80" },
+  { name: "Python", category: "AI & BACKEND", image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80" },
+  { name: "AWS", category: "CLOUD INFRA", image: "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=400&q=80" },
+  { name: "Pinecone", category: "VECTOR SEARCH", image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&q=80" },
 ];
+
+const whoText = "We're the AI partner that sticks. While others hand you a deck and disappear, we find opportunities, build the systems, and stay on to make sure they actually work.";
+const whoWords = whoText.split(" ");
 
 export function AboutContent() {
   const whoRef = useReveal();
   const journeyRef = useReveal();
   const toolsRef = useReveal();
+  const whoSectionRef = useRef<HTMLElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const section = whoSectionRef.current;
+      if (!section) return;
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+      const progress = (window.scrollY - sectionTop + window.innerHeight * 0.6) / sectionHeight;
+      setScrollProgress(Math.min(1, Math.max(0, progress)));
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
       {/* Hero */}
-      <section className="flex min-h-[80vh] items-end bg-base-500 px-6 pb-20 pt-32 md:px-12">
-        <div className="mx-auto max-w-6xl">
-          <RevealText
-            text={"We build bots\nthat think."}
-            as="h1"
-            className="text-[clamp(3rem,7vw,5rem)] font-medium leading-[1.05] tracking-[-4px] text-base-100"
-          />
-          <div className="mt-8 max-w-xl">
-            <p className="text-base font-medium leading-relaxed text-base-200">
-              Not another consulting deck. Not a proof-of-concept that dies on the vine.
-              We build AI that runs in production, fits your workflows, and keeps getting better.
-            </p>
+      <section className="flex min-h-screen items-center bg-base-500 px-6 md:px-12">
+        <div className="flex w-full flex-col gap-8 md:flex-row md:items-center">
+
+          {/* Left column — text at bottom */}
+          <div className="flex w-full flex-col justify-end md:w-1/2 pt-95">
+            <RevealText
+              lines={[
+                <>We build <span className="text-base-300">bots</span></>,
+                "that think.",
+              ]}
+              as="h1"
+              className="text-[clamp(4.5rem,10.5vw,7.5rem)] font-medium leading-[1.05] tracking-[-4px] text-base-100"
+            />
+            <div className="mt-8 max-w-xl">
+              <p className="text-xl font-medium leading-relaxed text-base-200">
+                Not another consulting deck. Not a proof-of-concept that dies on
+                the vine. We build AI that runs in production, fits your workflows,
+                and keeps getting better.
+              </p>
+            </div>
           </div>
+
+          {/* Right column — large image */}
+          <div className="w-full md:w-1/2">
+            <div className="h-[75vh] w-full overflow-hidden rounded-3xl bg-base-450 mt-16">
+              <img
+                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=80"
+                alt="Team working"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+
         </div>
       </section>
 
       {/* Who we are */}
-      <section ref={whoRef} className="bg-base-500 px-6 py-24 md:px-12">
-        <div className="mx-auto max-w-6xl">
+      <section
+        ref={(el) => {
+          (whoRef as React.MutableRefObject<HTMLElement | null>).current = el;
+          (whoSectionRef as React.MutableRefObject<HTMLElement | null>).current = el;
+        }}
+        className="bg-base-500 px-6 py-24 md:px-12"
+      >
+        <div className="mx-auto max-w-[1400px] text-center">
           <p className="reveal-up text-base font-medium text-base-350">Who we are</p>
-          <RevealText
-            text={
-              "We're the AI partner that sticks.\nWhile others hand you a deck and\ndisappear, we find opportunities,\nbuild the systems, and stay on to\nmake sure they actually work."
-            }
-            as="h3"
-            className="mt-6 text-[clamp(1.5rem,3vw,2.5rem)] font-medium leading-[1.2] tracking-[-1.2px] text-base-100"
-          />
+          <h3 className="mt-6 text-[clamp(2rem,4vw,3.5rem)] font-medium leading-[1.2] tracking-[-1.2px]">
+            {whoWords.map((word, i) => (
+              <span
+                key={i}
+                style={{
+                  color: scrollProgress > i / whoWords.length ? "var(--base-100)" : "var(--base-400)",
+                  transition: "color 0.3s ease",
+                }}
+              >
+                {word}{" "}
+              </span>
+            ))}
+          </h3>
         </div>
       </section>
 
       {/* The full AI journey */}
-      <section className="bg-base-500 px-6 py-24 md:px-12">
-        <div className="mx-auto max-w-6xl">
-          <p className="text-sm font-medium uppercase tracking-wider text-base-350">
-            How we help
-          </p>
-          <RevealText
-            text="The full AI journey"
-            as="h2"
-            className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-[550] tracking-[-2.4px] text-base-200"
-          />
-          <p className="mt-4 max-w-lg text-base font-medium text-base-300">
-            From figuring out where AI fits to building it and keeping it running — we cover the whole path.
-          </p>
+      <section className="bg-base-500 py-24 relative overflow-hidden">
+        {/* Header */}
+        <div className="px-6 md:px-12 mb-16">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="h-px w-12 bg-base-400" />
+            <p className="text-xs uppercase tracking-[0.4em] text-base-350 font-mono">
+              How we help
+            </p>
+          </div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-bold tracking-[-2px] text-base-200">
+              The full AI journey
+            </h2>
+            <p className="max-w-sm text-lg text-base-250 leading-relaxed md:text-right">
+              From figuring out where AI fits to building it and keeping
+              it running — we cover the whole path.
+            </p>
+          </div>
+        </div>
 
-          <div ref={journeyRef} className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {/* Horizontal timeline */}
+        <div className="relative">
+          {/* Connecting line */}
+          <div className="absolute top-[4.5rem] left-0 right-0 h-px bg-base-400/20 z-0" />
+
+          <div className="flex overflow-x-auto scrollbar-hide px-6 md:px-12 pb-8 gap-0">
             {journey.map((item, i) => (
               <div
                 key={item.title}
-                className="reveal-up rounded-3xl bg-base-450 p-8"
-                data-delay={i}
+                className="flex-shrink-0 w-[380px] group cursor-default relative"
               >
-                <h3 className="text-2xl font-medium tracking-[-1.2px] text-base-100">
-                  {item.title}
-                </h3>
-                <p className="mt-4 text-sm leading-relaxed text-base-250">
-                  {item.desc}
-                </p>
+                {/* Timeline node */}
+                <div className="relative z-10 flex flex-col items-start mb-8">
+                  <div className="flex items-center gap-4 w-full">
+                    {/* Node circle */}
+                    <div className="w-9 h-9 rounded-full border-2 border-base-400 bg-base-500 flex items-center justify-center flex-shrink-0 group-hover:border-base-100 transition-colors duration-300">
+                      <span className="text-xs font-mono text-base-400 group-hover:text-base-100 transition-colors duration-300">
+                        0{i + 1}
+                      </span>
+                    </div>
+                    {/* Line to next */}
+                    {i < journey.length - 1 && (
+                      <div className="flex-1 h-px bg-base-400/20" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Card */}
+                <div className="mr-5 rounded-3xl bg-base-450 p-8 h-[280px] flex flex-col justify-between group-hover:bg-base-400/30 relative overflow-hidden border border-base-400/0 hover:border-base-400/20" style={{ transition: "transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.7s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.7s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.7s cubic-bezier(0.16, 1, 0.3, 1)" }}>
+                  {/* Gradient reveal */}
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                    style={{
+                      background: [
+                        "radial-gradient(ellipse at top left, rgba(74,158,255,0.07) 0%, transparent 70%)",
+                        "radial-gradient(ellipse at top right, rgba(0,255,136,0.07) 0%, transparent 70%)",
+                        "radial-gradient(ellipse at bottom, rgba(139,92,246,0.07) 0%, transparent 70%)",
+                      ][i],
+                    }}
+                  />
+
+                  {/* Large watermark */}
+                  <div
+                    className="absolute -right-4 -bottom-4 text-[8rem] font-black leading-none select-none pointer-events-none"
+                    style={{
+                      WebkitTextStroke: "1px rgba(255,255,255,0.04)",
+                      color: "transparent",
+                    }}
+                  >
+                    0{i + 1}
+                  </div>
+
+                  <div className="relative z-10">
+                    {/* Tag */}
+                    <span className="text-xs uppercase tracking-widest text-base-400 font-mono border border-base-400/30 px-3 py-1 rounded-full group-hover:border-base-300 group-hover:text-base-300 transition-all duration-300">
+                      {["Strategy", "Implementation", "Partnership"][i]}
+                    </span>
+                  </div>
+
+                  <div className="relative z-10 mt-6">
+                    <h3 className="text-[clamp(1.5rem,2vw,2rem)] font-black tracking-[-2px] leading-[0.9] text-base-100 mb-4">
+                      {item.title}
+                    </h3>
+                    <p className="text-lg text-base-300 leading-relaxed group-hover:text-base-200 transition-colors duration-500">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Bottom strip */}
+        <div className="px-6 md:px-12 mt-8 flex items-center gap-6">
+          <div className="h-px flex-1 bg-base-400/20" />
+          <span className="text-xs font-mono uppercase tracking-widest text-base-400">
+            End to end AI
+          </span>
+          <div className="h-px flex-1 bg-base-400/20" />
+        </div>
       </section>
 
       {/* Tech toolkit */}
-      <section className="bg-base-500 px-6 py-24 md:px-12">
-        <div className="mx-auto max-w-6xl">
-          <p className="text-sm font-medium uppercase tracking-wider text-base-350">
-            Our AI toolkit
-          </p>
-          <RevealText
-            text="Built on proven tech"
-            as="h2"
-            className="mt-4 text-[clamp(2rem,4vw,3.5rem)] font-[550] tracking-[-2.4px] text-base-200"
-          />
-          <p className="mt-4 max-w-lg text-base font-medium text-base-300">
-            The tools we use daily to build AI systems that are stable, secure, and easy to improve over time.
-          </p>
+      <section ref={toolsRef} className="bg-base-500 py-24 relative overflow-hidden">
 
-          <div ref={toolsRef} className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+        <div className="px-6 md:px-12 max-w-7xl mx-auto">
+
+          {/* Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 pb-8 border-b border-base-400/20">
+            <div>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-px w-12 bg-base-400" />
+                <p className="text-xs uppercase tracking-[0.4em] text-base-350 font-mono">Our AI toolkit</p>
+              </div>
+              <h2 className="mt-4 text-[clamp(3rem,6vw,6rem)] font-bold tracking-[-2.4px] text-base-200">
+                Built on proven tech
+              </h2>
+            </div>
+            <div className="flex items-center gap-3 md:pb-2">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <p className="text-base text-base-300 max-w-xs">
+                {tools.length} technologies in active use
+              </p>
+            </div>
+          </div>
+
+          {/* Tool rows */}
+          <div className="flex flex-col">
             {tools.map((tool, i) => (
-              <div
-                key={tool.name}
-                className="reveal-up rounded-3xl bg-base-450 p-6"
-                data-delay={Math.min(i, 4)}
-              >
-                <div className="mb-4 h-24 rounded-2xl bg-base-500/50" />
-                <h3 className="text-xl font-medium text-base-100">{tool.name}</h3>
-                <p className="mt-1 text-xs font-medium uppercase tracking-wider text-base-350">
+              <div key={tool.name}
+                className="group flex items-center gap-8 py-8 border-b border-base-400/15 cursor-default hover:bg-base-450/20 px-6 -mx-6 rounded-2xl transition-all duration-500">
+
+                {/* Number */}
+                <span className="font-mono text-sm text-base-400 w-8 flex-shrink-0 group-hover:text-base-300 transition-colors duration-300">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+
+                {/* Name */}
+                <h3 className="text-[clamp(2rem,3.5vw,3rem)] font-black tracking-[-2px] text-base-400 group-hover:text-base-100 transition-colors duration-500 w-64 flex-shrink-0 leading-none">
+                  {tool.name}
+                </h3>
+
+                {/* Category badge */}
+                <span className="text-xs uppercase tracking-widest font-mono border border-base-400/30 px-3 py-1 rounded-full text-base-400 group-hover:border-base-300 group-hover:text-base-300 transition-all duration-300 flex-shrink-0">
                   {tool.category}
-                </p>
+                </span>
+
+                {/* Expanding line */}
+                <div className="flex-1 flex items-center gap-4">
+                  <div className="h-px bg-base-400/20 group-hover:bg-base-400/50 transition-colors duration-500 flex-1" />
+                </div>
+
+                {/* Right side — usage tag + arrow */}
+                <div className="flex items-center gap-4 flex-shrink-0">
+                  <span className="text-xs font-mono text-base-400/0 group-hover:text-base-350 transition-all duration-500 uppercase tracking-widest whitespace-nowrap">
+                    In production
+                  </span>
+                  <div className="w-8 h-8 rounded-full border border-base-400/0 group-hover:border-base-400/50 flex items-center justify-center transition-all duration-500 group-hover:bg-base-450">
+                    <span className="text-base-400/0 group-hover:text-base-300 transition-all duration-500 text-sm">→</span>
+                  </div>
+                </div>
               </div>
             ))}
+          </div>
+
+          {/* Bottom strip */}
+          <div className="mt-16 pt-8 border-t border-base-400/20 flex items-center justify-between">
+            <p className="text-xs font-mono text-base-400 uppercase tracking-widest">
+              Battle tested in production
+            </p>
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-xs font-mono text-green-400 uppercase tracking-widest">
+                All systems live
+              </span>
+            </div>
+            <p className="text-xs font-mono text-base-400 uppercase tracking-widest">
+              {tools.length} core technologies
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <section className="w-full bg-base-500 px-4 pb-6 md:px-6">
+        <div className="relative h-[95vh] w-full overflow-hidden rounded-3xl">
+          {/* Full bleed background image */}
+          <img
+            src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&q=80"
+            alt="Team working"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/50" />
+
+          {/* Content */}
+          <div className="relative z-10 flex h-full flex-col justify-between p-12">
+            {/* Center text */}
+            <div className="flex flex-1 items-center justify-center">
+              <h2 className="text-[clamp(4rem,10vw,9rem)] font-medium tracking-[-4px] text-white text-center">
+                The Bot Company
+              </h2>
+            </div>
+
+            {/* Bottom row */}
+            <div className="flex items-end justify-between">
+              <p className="text-2xl font-medium text-white/80">
+                Your AI partner
+              </p>
+              <p className="max-w-xs text-right text-lg font-medium leading-relaxed text-white/60">
+                Tell us where AI could help. We&apos;ll find the opportunity, build it,
+                and stick around to make it work.
+              </p>
+            </div>
           </div>
         </div>
       </section>
