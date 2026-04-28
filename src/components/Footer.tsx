@@ -82,7 +82,7 @@ function FooterRevealText() {
       {footerLines.map((line, lineIdx) => (
         <h1
           key={lineIdx}
-          className="text-[clamp(5rem,15vw,14rem)] font-[900] uppercase leading-[0.95] tracking-[-0.02em] text-base-100"
+          className="text-[clamp(2.5rem,10vw,12rem)] font-black tracking-[-2px] leading-none text-base-100 uppercase"
           style={{ fontFamily: "var(--font-outfit), sans-serif" }}
           aria-label={line}
         >
