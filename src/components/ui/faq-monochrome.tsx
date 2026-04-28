@@ -219,7 +219,7 @@ function FAQ1() {
 
   useEffect(() => {
     if (typeof window === "undefined") { setHasEntered(true); return; }
-    let timeout: ReturnType<typeof setTimeout>;
+    let timeout: number;
     const onLoad = () => { timeout = window.setTimeout(() => setHasEntered(true), 120); };
     if (document.readyState === "complete") { onLoad(); }
     else { window.addEventListener("load", onLoad, { once: true }); }
