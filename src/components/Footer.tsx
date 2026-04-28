@@ -139,7 +139,7 @@ export function Footer() {
       </div>
 
       {/* Social + tagline */}
-      <div className="mt-16 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <div className="mt-8 md:mt-16 flex flex-col gap-6 md:gap-8 md:flex-row md:items-end md:justify-between">
         <div className="flex gap-4">
           {socialLinks.map((social) => (
             <a
@@ -148,7 +148,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={social.label}
-              className="flex h-16 w-16 items-center justify-center rounded-full border border-base-400 text-base-200 transition-colors hover:bg-base-400 hover:text-base-100"
+              className="flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-full border border-base-400 text-base-200 transition-colors hover:bg-base-400 hover:text-base-100"
             >
               {social.icon}
             </a>
