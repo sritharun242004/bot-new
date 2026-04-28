@@ -43,7 +43,7 @@ export function LocationSection() {
       <div ref={ref} className="mx-auto max-w-[1400px]">
         <div className="flex flex-col lg:flex-row lg:items-stretch">
           {/* Left — Chennai map SVG (bigger) */}
-          <div className="relative w-full lg:w-[60%] min-h-[500px] lg:min-h-[700px]">
+          <div className="relative w-full lg:w-[60%] min-h-[280px] md:min-h-[500px] lg:min-h-[700px]">
             {/* Dark theme map (white lines) */}
             <img
               src="/chennai-dark.svg"
@@ -74,14 +74,14 @@ export function LocationSection() {
               <span className="relative z-10 flex h-4 w-4 items-center justify-center rounded-full bg-base-100 shadow-lg">
                 <span className="h-1.5 w-1.5 rounded-full bg-base-500" />
               </span>
-              <span className="absolute -left-40 top-1/2 -translate-y-1/2 whitespace-nowrap text-lg font-extrabold text-base-100">
+              <span className="absolute left-6 top-1/2 -translate-y-1/2 whitespace-nowrap text-sm md:text-lg font-extrabold text-base-100">
                 Mogappair
               </span>
             </div>
           </div>
 
           {/* Right — text */}
-          <div className="flex flex-col justify-center px-8 py-16 md:px-14 lg:w-[40%] lg:py-24">
+          <div className="flex flex-col justify-center px-5 py-10 md:px-8 md:py-16 lg:px-14 lg:w-[40%] lg:py-24">
             <RevealText
               lines={[
                 <span className="text-base-350">Based in</span>,

@@ -127,7 +127,7 @@ export function MenuToggle() {
         }}
       >
         <div className="absolute inset-4 rounded-[32px] bg-base-450">
-          <div className="flex h-full flex-col justify-between p-8 md:p-12">
+          <div className="flex h-full flex-col justify-between p-5 md:p-12">
             {/* Nav links — staggered slide up */}
             <nav className="flex flex-col gap-1 pt-8">
               {navLinks.map((link, i) => (
@@ -138,7 +138,7 @@ export function MenuToggle() {
                   <Link
                     href={link.href}
                     onClick={handleClose}
-                    className="block text-[clamp(2.5rem,5vw,4rem)] font-[550] leading-tight tracking-[-2.4px] text-base-300 transition-all duration-300 hover:text-base-100 hover:translate-x-3"
+                    className="block text-[clamp(1.8rem,5vw,4rem)] font-[550] leading-tight tracking-[-1.5px] md:tracking-[-2.4px] text-base-300 transition-all duration-300 hover:text-base-100 hover:translate-x-3"
                     style={{
                       transform: linksReady
                         ? "translateY(0%)"
@@ -155,7 +155,7 @@ export function MenuToggle() {
 
             {/* Footer info — fade up */}
             <div
-              className="flex flex-wrap gap-x-16 gap-y-6 text-base"
+              className="flex flex-wrap gap-x-8 md:gap-x-16 gap-y-4 md:gap-y-6 text-sm md:text-base"
               style={{
                 transform: footerReady ? "translateY(0px)" : "translateY(20px)",
                 opacity: footerReady ? 1 : 0,

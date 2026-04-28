@@ -12,7 +12,7 @@ export function CTAButton({ href, label }: CTAButtonProps) {
     <Link
       href={href}
       className="btn-cta relative inline-flex h-auto items-center rounded-[4rem] bg-base-100/75 p-[0.3rem] backdrop-blur-[10px]"
-      style={{ width: label.length > 8 ? "22rem" : "15rem", height: "5rem" }}
+      style={{ width: label.length > 8 ? "22rem" : "15rem", maxWidth: "88vw", height: "5rem" }}
     >
       <span
         className="btn-circle block h-[4.4rem] w-[4.4rem] rounded-full bg-base-450 overflow-hidden flex-shrink-0"
