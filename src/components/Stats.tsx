@@ -70,11 +70,11 @@ export function Stats() {
 
   return (
     <section ref={sectionRef} className="border-y border-base-400/20 bg-base-500 px-12 py-20">
-      <div className="mx-auto flex max-w-6xl items-center justify-between">
+      <div className="grid grid-cols-2 md:flex md:items-center md:justify-between gap-8 md:gap-0 max-w-6xl mx-auto">
         {stats.map((stat, i) => (
           <Fragment key={stat.label}>
             <StatItem stat={stat} triggered={triggered} />
-            {i < stats.length - 1 && <div className="h-16 w-px bg-base-400/40" />}
+            {i < stats.length - 1 && <div className="hidden md:block h-16 w-px bg-base-400/40" />}
           </Fragment>
         ))}
       </div>
