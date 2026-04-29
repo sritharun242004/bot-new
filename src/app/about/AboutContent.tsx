@@ -20,12 +20,12 @@ const journey = [
 ];
 
 const tools = [
-  { name: "OpenAI", category: "LLM PROVIDER", image: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=400&q=80" },
-  { name: "LangChain", category: "ORCHESTRATION", image: "https://images.unsplash.com/photo-1639322537228-f710d846310a?w=400&q=80" },
-  { name: "Next.js", category: "FRONTEND", image: "https://images.unsplash.com/photo-1618477388954-7852f32655ec?w=400&q=80" },
-  { name: "Python", category: "AI & BACKEND", image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400&q=80" },
-  { name: "AWS", category: "CLOUD INFRA", image: "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=400&q=80" },
-  { name: "Pinecone", category: "VECTOR SEARCH", image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&q=80" },
+  { name: "OpenAI", category: "LLM PROVIDER", desc: "GPT-4 powers our agents, chat systems and custom knowledge bases." },
+  { name: "LangChain", category: "ORCHESTRATION", desc: "Chains, memory and tool use for complex multi-step AI workflows." },
+  { name: "Next.js", category: "FRONTEND", desc: "Full-stack React framework for all client-facing AI products." },
+  { name: "Python", category: "AI & BACKEND", desc: "Core language for pipelines, automation and backend APIs." },
+  { name: "AWS", category: "CLOUD INFRA", desc: "Scalable cloud for deployment, storage and compute at any size." },
+  { name: "Pinecone", category: "VECTOR SEARCH", desc: "Semantic search and RAG pipelines for AI knowledge retrieval." },
 ];
 
 const whoText = "We're the AI partner that sticks. While others hand you a deck and disappear, we find opportunities, build the systems, and stay on to make sure they actually work.";
@@ -221,82 +221,75 @@ export function AboutContent() {
       </section>
 
       {/* Tech toolkit */}
-      <section ref={toolsRef} className="bg-base-500 py-24 relative overflow-hidden">
-
-        <div className="px-6 md:px-12 max-w-7xl mx-auto">
+      <section className="bg-base-500 py-24 px-6 md:px-12">
+        <div className="mx-auto max-w-7xl">
 
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 pb-8 border-b border-base-400/20">
+          <div className="flex items-end justify-between mb-16 pb-8 border-b border-base-400/20">
             <div>
-              <div className="flex items-center gap-4 mb-6">
+              <div className="flex items-center gap-4 mb-4">
                 <div className="h-px w-12 bg-base-400" />
                 <p className="text-xs uppercase tracking-[0.4em] text-base-350 font-mono">Our AI toolkit</p>
               </div>
-              <h2 className="mt-4 text-[clamp(3rem,6vw,6rem)] font-bold tracking-[-2.4px] text-base-200">
-                Built on proven tech
+              <h2 className="text-[clamp(3rem,6vw,6rem)] font-bold tracking-[-3px] leading-[0.9] text-base-100">
+                Built on<br />proven tech
               </h2>
             </div>
-            <div className="flex items-center gap-3 md:pb-2">
+            <div className="flex items-center gap-3 pb-2">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <p className="text-base text-base-300 max-w-xs">
-                {tools.length} technologies in active use
-              </p>
+              <span className="text-xs font-mono text-green-400 uppercase tracking-widest">All systems live</span>
             </div>
           </div>
 
-          {/* Tool rows */}
-          <div className="flex flex-col">
+          {/* Tool grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-base-400/20">
             {tools.map((tool, i) => (
               <div key={tool.name}
-                className="group flex items-center gap-8 py-8 border-b border-base-400/15 cursor-default hover:bg-base-450/20 px-6 -mx-6 rounded-2xl transition-all duration-500">
+                className="group bg-base-450 p-8 flex flex-col justify-between min-h-[260px] cursor-default hover:bg-base-400/40 transition-all duration-500 relative overflow-hidden">
 
-                {/* Number */}
-                <span className="font-mono text-sm text-base-400 w-8 flex-shrink-0 group-hover:text-base-300 transition-colors duration-300">
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-
-                {/* Name */}
-                <h3 className="text-[clamp(2rem,3.5vw,3rem)] font-black tracking-[-2px] text-base-400 group-hover:text-base-100 transition-colors duration-500 w-64 flex-shrink-0 leading-none">
-                  {tool.name}
-                </h3>
-
-                {/* Category badge */}
-                <span className="text-xs uppercase tracking-widest font-mono border border-base-400/30 px-3 py-1 rounded-full text-base-400 group-hover:border-base-300 group-hover:text-base-300 transition-all duration-300 flex-shrink-0">
-                  {tool.category}
-                </span>
-
-                {/* Expanding line */}
-                <div className="flex-1 flex items-center gap-4">
-                  <div className="h-px bg-base-400/20 group-hover:bg-base-400/50 transition-colors duration-500 flex-1" />
+                {/* Top row */}
+                <div className="flex items-start justify-between">
+                  <span className="font-mono text-sm text-base-300 group-hover:text-base-200 transition-colors duration-300">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <span className="text-sm uppercase tracking-widest font-mono border border-base-400/50 px-3 py-1 rounded-full text-base-300 group-hover:border-base-200 group-hover:text-base-200 transition-all duration-300">
+                    {tool.category}
+                  </span>
                 </div>
 
-                {/* Right side — usage tag + arrow */}
-                <div className="flex items-center gap-4 flex-shrink-0">
-                  <span className="text-xs font-mono text-base-400/0 group-hover:text-base-350 transition-all duration-500 uppercase tracking-widest whitespace-nowrap">
-                    In production
-                  </span>
-                  <div className="w-8 h-8 rounded-full border border-base-400/0 group-hover:border-base-400/50 flex items-center justify-center transition-all duration-500 group-hover:bg-base-450">
-                    <span className="text-base-400/0 group-hover:text-base-300 transition-all duration-500 text-sm">→</span>
+                {/* Tool name */}
+                <div>
+                  <h3 className="text-[clamp(2.4rem,3.5vw,3.2rem)] font-black tracking-[-2px] leading-none text-base-200 group-hover:text-base-100 transition-colors duration-500 mb-6">
+                    {tool.name}
+                  </h3>
+                  {/* Animated progress bar */}
+                  <div className="h-px bg-base-400/40 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-base-100 rounded-full transition-all duration-1000 ease-out"
+                      style={{ width: `${70 + (i % 4) * 8}%` }}
+                    />
                   </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-sm font-mono text-base-300 group-hover:text-base-200 transition-colors duration-300">
+                      In production
+                    </span>
+                    <span className="text-sm font-mono text-base-300 group-hover:text-base-200 transition-colors duration-300">
+                      {70 + (i % 4) * 8}%
+                    </span>
+                  </div>
+                  <p className="mt-4 text-base text-base-300 leading-relaxed group-hover:text-base-200 transition-colors duration-300">
+                    {tool.desc}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Bottom strip */}
-          <div className="mt-16 pt-8 border-t border-base-400/20 flex items-center justify-between">
-            <p className="text-xs font-mono text-base-400 uppercase tracking-widest">
-              Battle tested in production
-            </p>
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-xs font-mono text-green-400 uppercase tracking-widest">
-                All systems live
-              </span>
-            </div>
-            <p className="text-xs font-mono text-base-400 uppercase tracking-widest">
-              {tools.length} core technologies
-            </p>
+          {/* Footer strip */}
+          <div className="mt-16 flex items-center justify-between pt-8 border-t border-base-400/20">
+            <p className="text-xs font-mono text-base-400 uppercase tracking-widest">Production grade</p>
+            <p className="text-xs font-mono text-base-400 uppercase tracking-widest">{tools.length} core technologies</p>
+            <p className="text-xs font-mono text-base-400 uppercase tracking-widest">Verified stack</p>
           </div>
 
         </div>

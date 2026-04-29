@@ -6,7 +6,8 @@
       "Bash(npm run *)",
       "PowerShell(Get-Item .graphify_detect.json | Select-Object FullName, Length, IsReadOnly; [System.IO.File]::GetAttributes\\('.graphify_detect.json'\\))",
       "Bash(taskkill /PID 6336 /F)",
-      "PowerShell(taskkill *)"
+      "PowerShell(taskkill *)",
+      "Bash(git checkout *)"
     ]
   }
 }

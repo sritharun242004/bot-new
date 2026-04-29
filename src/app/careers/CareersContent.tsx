@@ -71,6 +71,14 @@ export function CareersContent() {
     if (currentStep === 1) {
       if (!formData.fullName?.trim())
         newErrors.fullName = "Full name is required";
+      else if (!/^[a-zA-ZÀ-ɏ][a-zA-ZÀ-ɏ\s'.\-]{1,}$/.test(formData.fullName.trim()))
+        newErrors.fullName = "Enter a valid name — letters only, no symbols or numbers";
+      else if (formData.fullName.trim().length < 3)
+        newErrors.fullName = "Name must be at least 3 characters";
+      else if (!/[aeiouAEIOU]/.test(formData.fullName.trim()))
+        newErrors.fullName = "Please enter your real full name";
+      else if (!formData.fullName.trim().includes(" "))
+        newErrors.fullName = "Please enter both your first and last name";
       if (!formData.email?.trim())
         newErrors.email = "Email is required";
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
@@ -82,6 +90,8 @@ export function CareersContent() {
         newErrors.age = "Age is required";
       else if (isNaN(Number(formData.age)) || Number(formData.age) < 16 || Number(formData.age) > 80)
         newErrors.age = "Please enter a valid age between 16 and 80";
+      if (formData.phone?.trim() && !/^[6-9]\d{9}$/.test(formData.phone.trim()))
+        newErrors.phone = "Enter a valid 10-digit Indian mobile number";
     }
 
     if (currentStep === 3) {
@@ -89,6 +99,18 @@ export function CareersContent() {
         newErrors.experience = "Please select experience level";
       if (!formData.skills?.trim())
         newErrors.skills = "Please list your current skills";
+      else if (!/^[a-zA-Z0-9\s,.\-_#+\/&()]+$/.test(formData.skills.trim()))
+        newErrors.skills = "Use only letters, numbers and common punctuation (commas, +, #, /)";
+      else if (formData.skills.trim().length < 3)
+        newErrors.skills = "Please be more specific about your skills";
+      else {
+        const gibberishWord = formData.skills.trim()
+          .split(/[\s,]+/)
+          .filter(w => w.length > 4)
+          .some(w => !/[aeiouAEIOU0-9]/.test(w));
+        if (gibberishWord)
+          newErrors.skills = "Please enter real skill names (e.g. React, Python, Node.js)";
+      }
     }
 
     if (currentStep === 4) {
@@ -129,13 +151,6 @@ export function CareersContent() {
 
   return (
     <div className="relative bg-base-500">
-      {/* Oversized background text */}
-      <div className="fixed inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-        <span className="text-[20vw] font-black text-base-450 leading-none opacity-50">
-          CAREERS
-        </span>
-      </div>
-
       {/* Floating "Now Hiring" tag */}
       <div className="fixed top-32 right-8 rotate-90 text-xs uppercase tracking-widest text-base-350 origin-right z-10">
         Now Hiring
@@ -335,9 +350,13 @@ export function CareersContent() {
                         type="tel"
                         value={formData.phone}
                         onChange={(e) => update("phone", e.target.value)}
-                        placeholder="+91 98765 43210"
+                        placeholder="98765 43210"
+                        maxLength={10}
                         className={inputClass("phone")}
                       />
+                      {errors.phone && (
+                        <p className="mt-1 text-sm text-red-400">{errors.phone}</p>
+                      )}
                     </label>
                   </>
                 )}

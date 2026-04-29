@@ -19,23 +19,23 @@ export function WhatWeDo() {
   return (
     <section className="bg-base-500 px-6 min-h-screen flex flex-col justify-center transition-colors duration-300 py-20">
       <div className="mx-auto max-w-none text-left">
-        <h2 className="text-[clamp(2.2rem,7vw,7rem)] font-medium leading-[1.15] tracking-[-2px] text-left text-base-100">
-          We build bots that think — not just respond. Strategy that finds real opportunities. Implementation that ships. Partnership that scales.
+        <h2 className="text-[clamp(2rem,7vw,8.5rem)] font-medium leading-[1.1] tracking-[-1px] text-left text-base-100 indent-[1em] md:indent-[3em] max-w-none">
+          We build bots that think not just respond. <span className="text-base-300">Strategy</span> that finds real opportunities. <span className="text-base-300">Implementation</span> that ships. <span className="text-base-300">Partnership</span> that scales.
         </h2>
 
         {/* Sub-section matching Image 7 style */}
-        <div ref={ref} className="mt-16 md:mt-40 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 text-left">
-          <div className="max-w-md">
+        <div ref={ref} className="mt-28 md:mt-40 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 text-left">
+          <div>
             <p className="reveal-up text-lg font-medium text-base-100 opacity-60 mb-8">
               What we build
             </p>
-            <p className="reveal-up text-[clamp(1.5rem,2.5vw,2rem)] font-medium leading-[1.3] text-base-100" data-delay="1">
-              From AI agents and workflow automation to full-stack products —
+            <p className="reveal-up text-[clamp(1rem,3.5vw,3.2rem)] font-medium leading-[1.3] text-base-100" data-delay="1">
+              From AI agents and workflow automation to full-stack products
               we cover the whole path.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5 items-start">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-5 items-start">
             {services.map((service, i) => (
               <span
                 key={service}

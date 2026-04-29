@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { animate } from "framer-motion";
+import gsap from "gsap";
 
 const STAGES = [
   {
@@ -36,27 +36,27 @@ const STAGES = [
   },
 ];
 
-// Scaled segments
 const OFFSETS = [
-  { dx: 0, dy: 600 },   // S1: DOWN (Stage 01)
-  { dx: 450, dy: 0 },   // S2: RIGHT (Stage 02)
-  { dx: 0, dy: -1400 },  // S3: UP (Stage 03)
-  { dx: 450, dy: 0 },   // S4: RIGHT (Stage 04)
-  { dx: 0, dy: 520 },   // S5: DOWN (Stage 05)
-  { dx: 520, dy: 0 },   // S6: RIGHT (Stage 06)
+  { dx: 0, dy: 600 },    // S1: DOWN  (Stage 01)
+  { dx: 450, dy: 0 },    // S2: RIGHT (Stage 02)
+  { dx: 0, dy: -1400 },  // S3: UP    (Stage 03)
+  { dx: 450, dy: 0 },    // S4: RIGHT (Stage 04)
+  { dx: 0, dy: 520 },    // S5: DOWN  (Stage 05)
+  { dx: 600, dy: 0 },    // S6: RIGHT (Stage 06)
 ];
 
 const START_X = 500;
 const START_Y = 500;
 
-// Dynamic cumulative lengths for accurate timing
-const SEGMENT_LENGTHS = OFFSETS.map(o => Math.abs(o.dx) + Math.abs(o.dy));
-const TOTAL_LENGTH = SEGMENT_LENGTHS.reduce((a, b) => a + b, 0);
-const MILESTONES = SEGMENT_LENGTHS.reduce((acc, len, i) => [...acc, acc[i] + len], [0]);
-
 // Camera ViewBox dimensions
 const V_WIDTH = 4200;
 const V_HEIGHT = 3000;
+
+// Last horizontal segment: (1400, 220) → (1920, 220). Midpoint x = 1660.
+// Ball is placed in the open space above the segment (y < 135 = line top edge).
+// At y=-200: ball bottom = -55 (190-unit gap above line). No upper path at x=1660.
+const STATIC_BALL_X = 1780;
+const STATIC_BALL_Y = -200;
 
 const FULL_PATH_D = (() => {
   let d = `M ${START_X} ${START_Y}`;
@@ -75,21 +75,44 @@ export function HowWeWork() {
   const svgRef = useRef<SVGSVGElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const ballRef = useRef<SVGCircleElement>(null);
-  const isPulliActive = useRef(false);
-  const isLocked = useRef(false);
+  const staticBallRef = useRef<SVGCircleElement>(null);
+  // Right panel — GSAP fades + slides this out during Phase 2
+  const labelsPanelRef = useRef<HTMLDivElement>(null);
+  const startTextRef = useRef<HTMLDivElement>(null);
+  const totalLengthRef = useRef(0);
 
   const [activeLabelIdx, setActiveLabelIdx] = useState(0);
 
   useEffect(() => {
     let requestRef: number;
 
+    // Cache total path length and set dasharray once
+    if (pathRef.current) {
+      totalLengthRef.current = pathRef.current.getTotalLength();
+      pathRef.current.style.strokeDasharray = `${totalLengthRef.current}`;
+    }
+
+    // ── Phase 2 GSAP timeline (paused; driven manually by scroll progress) ──
+    // Section is h-[900vh] = 9×VH. Phase 1 covers the original 750vh
+    // equivalent (6.5×VH of scrollable range). Phase 2 covers the remaining
+    // 1.5×VH = 150vh. The timeline is scrubbed via tl.progress(p2).
+    const tl = gsap.timeline({ paused: true, defaults: { ease: "none" } });
+
+    // Zoom IN: shrink the viewBox so the path fills more of the screen.
+    // Phase 1 ends with viewBox centred on ball (1920,220) → "-180 -1280 4200 3000".
+    // Target is centred on the full-path centre (1210,400) with a tight frame
+    // → "110 -500 2200 1800", giving ≈1.9× larger appearance.
+    tl.fromTo(svgRef.current!,
+      { attr: { viewBox: "-180 -1280 4200 3000" }, x: 0 },
+      { attr: { viewBox: "-300 -900 3200 2400" }, x: -2 },
+      0,
+    );
+
+
+    // ── Camera + ball update (Phase 1) ──────────────────────────────────────
     const updateCameraAndBall = (x: number, y: number) => {
-      // Guard 1: All required refs must exist
       if (!svgRef.current || !ballRef.current) return;
-
-      // Guard 2: x and y must be valid numbers
-      if (typeof x !== 'number' || typeof y !== 'number' || isNaN(x) || isNaN(y)) return;
-
+      if (typeof x !== "number" || typeof y !== "number" || isNaN(x) || isNaN(y)) return;
       const vX = x - V_WIDTH / 2;
       const vY = y - V_HEIGHT / 2;
       svgRef.current.setAttribute("viewBox", `${vX} ${vY} ${V_WIDTH} ${V_HEIGHT}`);
@@ -100,96 +123,70 @@ export function HowWeWork() {
     const handleScroll = () => {
       if (!sectionRef.current || !svgRef.current || !pathRef.current || !ballRef.current) return;
 
-      const section = sectionRef.current;
-      const rect = section.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const sectionHeight = section.offsetHeight;
+      const rect = sectionRef.current.getBoundingClientRect();
+      const VH = window.innerHeight;
 
-      const progress = Math.max(0, Math.min(1, -rect.top / (sectionHeight - viewportHeight)));
 
-      // If we are scrolling back up, ensure we unlock
-      if (progress < 0.98 && isLocked.current) {
-        document.body.style.overflow = "";
-        isLocked.current = false;
+      // Phase 1: 6.5 × VH — path draws + camera follows
+      // Phase 2 zoom: 1.0 × VH — zoom-in animation (was 0.1 VH, now 10× slower)
+      // Phase 2 hold: 0.5 × VH — hold zoomed state before section exits
+      // Total: 8 VH scrollable → section h-[900vh] (9 VH tall, sticky = 1 VH)
+      const phase1Range = 6.5 * VH;
+      const phase2ZoomRange = 0.3 * VH;
+      const scrolled = Math.max(0, -rect.top);
+
+      // ── Phase 2: user has scrolled past 06 Evolve ────────────────────────
+      if (scrolled >= phase1Range) {
+        // Hold path fully drawn, lock camera at path end
+        pathRef.current.style.strokeDashoffset = "0";
+        setActiveLabelIdx(5);
+        // Instantly swap balls and hide labels — immediate on scroll entry
+        ballRef.current.style.opacity = "0";
+        if (labelsPanelRef.current) labelsPanelRef.current.style.opacity = "0";
+        const p2 = Math.max(0, Math.min(1, (scrolled - phase1Range) / phase2ZoomRange));
+        if (staticBallRef.current) {
+          staticBallRef.current.style.opacity = "1";
+          staticBallRef.current.style.fill = p2 > 0 ? "var(--base-100)" : "#9a9a9a";
+          staticBallRef.current.style.stroke = p2 > 0 ? "var(--base-100)" : "#7a7a7a";
+        }
+        if (startTextRef.current) startTextRef.current.style.opacity = p2.toString();
+        tl.progress(p2);
+        return;
       }
 
-      const totalLength = pathRef.current.getTotalLength();
-      // Guard 3: path length must be valid
-      if (!totalLength || isNaN(totalLength)) return;
+      // Snap Phase 2 back to zero and restore all elements when re-entering Phase 1
+      if (tl.progress() > 0) tl.progress(0);
+      ballRef.current.style.opacity = "1";
+      if (staticBallRef.current) {
+        staticBallRef.current.style.opacity = "0";
+        staticBallRef.current.style.fill = "#9a9a9a";
+        staticBallRef.current.style.stroke = "#7a7a7a";
+      }
+      if (labelsPanelRef.current) labelsPanelRef.current.style.opacity = "1";
+      if (startTextRef.current) startTextRef.current.style.opacity = "0";
 
-      const drawnLength = progress * totalLength;
-
-      // Sync Path drawing
-      pathRef.current.style.strokeDasharray = `${totalLength}`;
-      pathRef.current.style.strokeDashoffset = `${totalLength - drawnLength}`;
-
-      // Guard 4: drawnLength must be finite
-      if (!isFinite(drawnLength)) return;
-
-      const point = pathRef.current.getPointAtLength(drawnLength);
-
-      // Guard 5: verify point from getPointAtLength
-      if (!point || typeof point.x !== 'number' || typeof point.y !== 'number') return;
+      // ── Phase 1: path drawing + camera follow ────────────────────────────
+      const progress = Math.max(0, Math.min(1, scrolled / phase1Range));
 
       const stageFloat = progress * 6;
       const currentIdx = Math.min(Math.floor(stageFloat), 5);
-
-      // Trigger special pulli animation at 100% completion of section 06
-      if (currentIdx === 5 && progress > 0.999) {
-        if (!isPulliActive.current) {
-          isPulliActive.current = true;
-          isLocked.current = true;
-          document.body.style.overflow = "hidden"; // Lock scroll to force user to see animation
-
-          const bbox = pathRef.current.getBBox();
-          const targetX = bbox.x + (bbox.width * 0.72);
-          const targetY = bbox.y - 400;
-
-          setTimeout(() => {
-            animate({ x: point.x, y: point.y }, { x: targetX, y: targetY }, {
-              duration: 2.5,
-              ease: [0.16, 1, 0.3, 1], // Smooth in-out easing
-              onUpdate: (latest) => {
-                if (latest && typeof latest.x === 'number' && typeof latest.y === 'number') {
-                  updateCameraAndBall(latest.x, latest.y);
-                }
-              },
-              onComplete: () => {
-                // Brief hold then unlock scroll
-                setTimeout(() => {
-                  document.body.style.overflow = "";
-                  isLocked.current = false;
-                }, 500);
-              }
-            });
-          }, 100); // Pause for 100ms
-        }
-      } else {
-        if (isPulliActive.current && progress < 0.98) {
-          isPulliActive.current = false;
-
-          const bbox = pathRef.current.getBBox();
-          const targetX = bbox.x + (bbox.width * 0.72);
-          const targetY = bbox.y - 400;
-
-          // Animate back to path tip
-          animate({ x: targetX, y: targetY }, { x: point.x, y: point.y }, {
-            duration: 0.6,
-            onUpdate: (latest) => {
-              if (latest && typeof latest.x === 'number' && typeof latest.y === 'number') {
-                updateCameraAndBall(latest.x, latest.y);
-              }
-            }
-          });
-        } else if (!isPulliActive.current) {
-          updateCameraAndBall(point.x, point.y);
-        }
-      }
-
       setActiveLabelIdx(currentIdx);
+
+      const totalLength = totalLengthRef.current;
+      if (!totalLength || isNaN(totalLength)) return;
+
+      const drawnLength = progress * totalLength;
+      if (!isFinite(drawnLength)) return;
+
+      pathRef.current.style.strokeDashoffset = `${totalLength - drawnLength}`;
+
+      const point = pathRef.current.getPointAtLength(drawnLength);
+      if (!point || typeof point.x !== "number" || typeof point.y !== "number") return;
+      updateCameraAndBall(point.x, point.y);
     };
 
     const onScroll = () => {
+      cancelAnimationFrame(requestRef);
       requestRef = requestAnimationFrame(handleScroll);
     };
 
@@ -199,7 +196,8 @@ export function HowWeWork() {
     return () => {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(requestRef);
-      document.body.style.overflow = ""; // Safety cleanup
+      tl.revert();
+      tl.kill();
     };
   }, []);
 
@@ -207,15 +205,16 @@ export function HowWeWork() {
     <section
       id="how-we-work"
       ref={sectionRef}
-      className="relative h-[400vh] md:h-[700vh] w-full bg-base-500"
+      className="relative h-[900vh] w-full bg-base-500"
     >
-      <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-12 lg:px-24 overflow-hidden gap-6 md:gap-[24px] bg-base-500">
+      <div className="sticky top-0 h-screen w-full flex flex-col md:flex-row items-center justify-between px-6 md:px-12 lg:px-24 overflow-hidden gap-6 md:gap-[24px]">
 
+        {/* Left: SVG path animation */}
         <div className="w-full md:w-[68%] h-[58%] md:h-full flex items-center justify-center overflow-hidden">
-          <div className="w-full h-full max-w-[200vw] max-h-[120vh] min-w-[70vw] min-h-[75vh] flex items-center justify-center overflow-hidden md:translate-x-50 md:-translate-y-12">
+          <div className="w-full h-full max-w-[110vw] max-h-[130vh] min-w-[90vw] min-h-[105vh] flex items-center justify-center overflow-hidden md:translate-x-40 md:-translate-y-12">
             <svg
               ref={svgRef}
-              viewBox={`0 0 ${V_WIDTH} ${V_HEIGHT}`}
+              viewBox={`${START_X - V_WIDTH / 2} ${START_Y - V_HEIGHT / 2} ${V_WIDTH} ${V_HEIGHT}`}
               preserveAspectRatio="xMidYMid meet"
               className="w-full h-full"
             >
@@ -228,41 +227,79 @@ export function HowWeWork() {
                 strokeLinejoin="miter"
                 strokeMiterlimit="10"
                 fill="none"
+                style={{ strokeDasharray: "999999", strokeDashoffset: "999999" }}
               />
 
+              {/* Tracking ball — follows the path tip during Phase 1 */}
               <circle
                 ref={ballRef}
+                cx={START_X}
+                cy={START_Y}
                 r="145"
                 fill="#9a9a9a"
                 stroke="#7a7a7a"
                 strokeWidth="3"
                 style={{ filter: "drop-shadow(0 4px 12px rgba(0,0,0,.4))" }}
               />
+
+              {/* Static ball — appears at midpoint of last horizontal segment in Phase 2 */}
+              <circle
+                ref={staticBallRef}
+                cx={STATIC_BALL_X}
+                cy={STATIC_BALL_Y}
+                r="145"
+                strokeWidth="3"
+                style={{ opacity: 0, fill: "#9a9a9a", stroke: "#7a7a7a", filter: "drop-shadow(0 4px 12px rgba(0,0,0,.4))", transition: "fill 0.05s ease, stroke 0.05s ease" }}
+              />
             </svg>
           </div>
         </div>
 
+        {/* Right: stage labels + phase-2 CTA — both share the same column */}
         <div className="relative w-full md:w-[30%] h-[42%] md:h-full flex items-center">
-          {STAGES.map((stage, idx) => (
-            <div
-              key={stage.num}
-              className={`absolute inset-0 flex flex-col justify-center transition-opacity duration-500 ease-in-out ${activeLabelIdx === idx ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-                }`}
-            >
-              <div className="flex flex-col">
-                <span className="text-[clamp(2.5rem,14vw,7rem)] md:text-[110px] font-[800] text-base-400 leading-[0.95] select-none tracking-tight">
-                  {stage.num}
-                </span>
-                <h3 className="text-[clamp(2rem,11vw,5rem)] md:text-[96px] font-[800] text-base-100 leading-[1.0] tracking-tight">
-                  {stage.title}
-                </h3>
-                <p className="mt-3 md:mt-10 text-[15px] md:text-[22px] leading-[1.5] text-base-250 max-w-[480px] font-normal">
-                  {stage.desc}
-                </p>
+
+          {/* Stage labels — hidden in Phase 2 */}
+          <div
+            ref={labelsPanelRef}
+            className="absolute inset-0 flex items-center"
+          >
+            {STAGES.map((stage, idx) => (
+              <div
+                key={stage.num}
+                className={`absolute inset-0 flex flex-col justify-center transition-opacity duration-500 ease-in-out ${activeLabelIdx === idx ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                  }`}
+              >
+                <div className="flex flex-col">
+                  <span className="text-[80px] md:text-[110px] font-[800] text-base-400 leading-[0.95] select-none tracking-tight">
+                    {stage.num}
+                  </span>
+                  <h3 className="text-[60px] md:text-[96px] font-[800] text-base-100 leading-[1.0] tracking-tight">
+                    {stage.title}
+                  </h3>
+                  <p className="mt-10 text-[18px] md:text-[22px] leading-[1.5] text-base-250 max-w-[480px] font-normal">
+                    {stage.desc}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Phase 2 CTA — fades in as stage labels fade out */}
+          <div
+            ref={startTextRef}
+            className="absolute inset-0 flex flex-col justify-center pointer-events-none"
+            style={{ opacity: 0 }}
+          >
+            <p
+              className="text-[clamp(3rem,5.5vw,6.5rem)] font-[900] uppercase leading-[0.92] tracking-[-0.02em] text-base-100"
+              style={{ fontFamily: "var(--font-outfit), sans-serif" }}
+            >
+              <span className="text-base-350">SO SHALL</span><br />WE<br />START
+            </p>
+          </div>
+
         </div>
+
       </div>
     </section>
   );

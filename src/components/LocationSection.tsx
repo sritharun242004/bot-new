@@ -39,11 +39,11 @@ export function LocationSection() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-base-500">
+    <section className="relative overflow-hidden bg-base-500 pb-16 md:pb-0 min-h-[600px] md:min-h-0 -mt-8 md:mt-0">
       <div ref={ref} className="mx-auto max-w-[1400px]">
-        <div className="flex flex-col lg:flex-row lg:items-stretch">
+        <div className="flex flex-col md:flex-row md:items-stretch overflow-hidden gap-8 md:gap-0">
           {/* Left — Chennai map SVG (bigger) */}
-          <div className="relative w-full lg:w-[60%] min-h-[280px] md:min-h-[500px] lg:min-h-[700px]">
+          <div className="relative w-full lg:w-[60%] min-h-[460px] md:min-h-[600px] lg:min-h-[700px] translate-x-8">
             {/* Dark theme map (white lines) */}
             <img
               src="/chennai-dark.svg"
@@ -112,7 +112,7 @@ export function LocationSection() {
             </div>
 
             <p
-              className="reveal-up mt-12 text-sm font-medium uppercase tracking-wider text-base-350"
+              className="reveal-up text-xs uppercase tracking-widest text-base-350 font-mono mt-4 md:absolute md:bottom-6 md:left-6"
               data-delay="2"
             >
               Chennai

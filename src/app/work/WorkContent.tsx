@@ -95,7 +95,7 @@ ${i % 2 === 0
             Quick prototypes that prove a concept, test an interaction, or explore new workflows.
           </p>
 
-          <div ref={expRef} className="mt-12 flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+          <div ref={expRef} className="mt-12 flex flex-col gap-4 md:flex-row md:overflow-x-auto md:pb-4 md:scrollbar-hide">
             {experimental.map((p, i) => {
               const isLight = i % 2 === 1;
               const cardBg = isLight
@@ -112,7 +112,7 @@ ${i % 2 === 0
                 <Link
                   key={p.slug}
                   href={`/work/${p.slug}`}
-                  className={`group relative flex h-[280px] w-[400px] flex-shrink-0 cursor-pointer flex-col justify-between overflow-hidden rounded-3xl p-8 ${cardBg}`}
+                  className={`group relative flex h-auto min-h-[220px] w-full md:h-[280px] md:w-[400px] md:flex-shrink-0 cursor-pointer flex-col justify-between overflow-hidden rounded-3xl p-8 ${cardBg}`}
                 >
                   <span
                     className="pointer-events-none absolute right-6 top-4 select-none text-[8rem] font-black leading-none"

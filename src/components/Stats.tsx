@@ -37,8 +37,7 @@ function StatItem({ stat, triggered }: { stat: Stat; triggered: boolean }) {
 
   return (
     <div className="group relative flex flex-col items-center gap-2">
-      <span className="mb-2 h-1.5 w-1.5 rounded-full bg-base-300 transition-colors duration-300 group-hover:bg-base-100" />
-      <h2 className="text-[clamp(3rem,6vw,5rem)] font-[550] tracking-[-3px] text-base-100 transition-colors duration-300 group-hover:text-base-100">
+      <h2 className="text-[clamp(2rem,6vw,5rem)] font-[550] tracking-[-2px] md:tracking-[-3px] text-base-100 transition-colors duration-300 group-hover:text-base-100">
         {stat.prefix ?? ""}{count}{stat.suffix ?? ""}
       </h2>
       <p className="mt-1 text-sm uppercase tracking-widest text-base-350">
@@ -69,7 +68,7 @@ export function Stats() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="border-y border-base-400/20 bg-base-500 px-12 py-20">
+    <section ref={sectionRef} className="border-y border-base-400/20 bg-base-500 px-6 md:px-12 py-16 md:py-20">
       <div className="grid grid-cols-2 md:flex md:items-center md:justify-between gap-8 md:gap-0 max-w-6xl mx-auto">
         {stats.map((stat, i) => (
           <Fragment key={stat.label}>

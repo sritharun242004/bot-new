@@ -51,12 +51,12 @@ export function CalEmbed() {
   }, [theme]);
 
   return (
-    <section className="bg-base-500 px-6 py-24 md:px-12">
+    <section className="bg-base-500 px-6 pt-0 pb-0 md:py-24 md:px-12">
       <div className="mx-auto max-w-6xl">
         <RevealText
           text="Let's talk"
           as="h2"
-          className="mb-8 text-center text-[clamp(2rem,4vw,3.5rem)] font-[550] tracking-[-2.4px] text-base-100"
+          className="mb-4 md:mb-8 text-center text-[clamp(2rem,4vw,3.5rem)] font-[550] tracking-[-2.4px] text-base-100"
         />
         <div
           className="overflow-hidden rounded-[2rem] border border-base-400/20 transition-colors duration-300"
