@@ -4,53 +4,25 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 
 const clients = [
-  { name: "Road Runner Tribe", logo: "/logos/rrt-logo.png" },
-  { name: "Wynza Corp", logo: "/logos/wynza-logo.png", size: "h-24" },
-  { name: "Inai Community", logo: "/logos/inai-logo.png", size: "h-24", forceBlackInLight: true },
-  { name: "Keenstack Media", logo: "/logos/keenstack.png" },
-  { name: "Pata Silks", logo: "/logos/patasilks-log0.png", size: "h-24" },
-  { name: "St James Court", logo: "/logos/stjamescourt-logo.png", size: "h-24" },
-  { name: "Matthew Arts", logo: "/logos/mathewarts.png", size: "h-24", forceWhiteInDark: true, forceBlackInLight: true },
-  {
-    name: "Become",
-    logo: "/logos/become.webp",
-    forceWhiteInDark: true,
-    forceBlackInLight: true
-  },
-  {
-    name: "Belsterns",
-    logo: "/logos/belsterns.png",
-    forceWhiteInDark: true,
-    forceBlackInLight: true
-  },
-  {
-    name: "MentorCloud",
-    logo: "/logos/mentor-cloud.png",
-    lightLogo: "/logos/mentor-cloud-text-black.png"
-  },
-  { name: "Printrove", logo: "/logos/printrove.webp", forceBlackInLight: true },
-  { name: "Silver Crafts", logo: "/logos/silvercrafts.png", forceBlackInLight: true },
-  { name: "SPI Edge", logo: "/logos/spi-edge.png", forceBlackInLight: true },
-  {
-    name: "Whoamama",
-    logo: "/logos/whoamama.webp",
-    lightLogo: "/logos/whoamama-dark.png",
-    forceWhiteInDark: true,
-    forceBlackInLight: true
-  },
-  { name: "Maa Ilay", logo: "/logos/maa-ilay.png" },
-  { name: "RWK Media", logo: "/logos/rwk.png" },
-  {
-    name: "Icemail",
-    logo: "/logos/icemail-alt.png",
-    lightLogo: "/logos/icemail-alt-text-black.png"
-  },
-  {
-    name: "Happy Cars",
-    logo: "/logos/happy-cars.png",
-    lightLogo: "/logos/happy-cars-dark.png"
-  },
-  { name: "Tamil Business Tribe", logo: "/logos/tbt.webp", size: "h-24", forceVisibility: true },
+  { name: "Road Runner Tribe",  logo: "/logos/rrt-logo.png",          href: "https://roadrunnertribe.com/" },
+  { name: "Wynza Corp",         logo: "/logos/wynza-logo.png",         href: "",                                    size: "h-24" },
+  { name: "Inai Community",     logo: "/logos/inai-logo.png",          href: "https://inaicommunity.com/",          size: "h-24", forceBlackInLight: true },
+  { name: "Keenstack Media",    logo: "/logos/keenstack.png",          href: "https://keenstackmedia.com/" },
+  { name: "Pata Silks",         logo: "/logos/patasilks-log0.png",     href: "",                                    size: "h-24" },
+  { name: "St James Court",     logo: "/logos/stjamescourt-logo.png",  href: "",                                    size: "h-24" },
+  { name: "Matthew Arts",       logo: "/logos/mathewarts.png",         href: "",                                    size: "h-24", forceWhiteInDark: true, forceBlackInLight: true },
+  { name: "Become",             logo: "/logos/become.webp",            href: "https://www.become.team/",            forceWhiteInDark: true, forceBlackInLight: true },
+  { name: "Belsterns",          logo: "/logos/belsterns.png",          href: "https://belsterns.com/",              forceWhiteInDark: true, forceBlackInLight: true },
+  { name: "MentorCloud",        logo: "/logos/mentor-cloud.png",       href: "",                                    lightLogo: "/logos/mentor-cloud-text-black.png" },
+  { name: "Printrove",          logo: "/logos/printrove.webp",         href: "https://printrove.com/",              forceBlackInLight: true },
+  { name: "Silver Crafts",      logo: "/logos/silvercrafts.png",       href: "https://www.silvercrafts.co.in/",     forceBlackInLight: true },
+  { name: "SPI Edge",           logo: "/logos/spi-edge.png",           href: "",                                    forceBlackInLight: true },
+  { name: "Whoamama",           logo: "/logos/whoamama.webp",          href: "https://whoamama.com/",               lightLogo: "/logos/whoamama-dark.png", forceWhiteInDark: true, forceBlackInLight: true },
+  { name: "Maa Ilay",           logo: "/logos/maa-ilay.png",           href: "https://maailay.com/" },
+  { name: "RWK Media",          logo: "/logos/rwk.png",                href: "https://rwkmedia.in/" },
+  { name: "Icemail",            logo: "/logos/icemail-alt.png",        href: "https://www.icemail.ai/",             lightLogo: "/logos/icemail-alt-text-black.png" },
+  { name: "Happy Cars",         logo: "/logos/happy-cars.png",         href: "",                                    lightLogo: "/logos/happy-cars-dark.png" },
+  { name: "Tamil Business Tribe", logo: "/logos/tbt.webp",            href: "https://tamilbusinesstribe.com/",     size: "h-24", forceVisibility: true },
 ];
 
 function recolourLogo(src: string, toWhite: boolean, removeWhiteBg = false): Promise<string> {
@@ -159,44 +131,62 @@ export function ClientMarquee() {
           className="flex shrink-0 items-center gap-12 md:gap-16 lg:gap-20"
           style={{ willChange: "transform" }}
         >
-          {doubled.map((client, i) => (
-            <Image
-              key={i}
-              src={
-                client.name === "Wynza Corp"
-                  ? wynzaUrl
-                  : client.name === "Keenstack Media"
-                  ? keenstackUrl
-                  : client.name === "Pata Silks"
-                  ? pataUrl
-                  : (!isDarkTheme && (client as any).lightLogo ? (client as any).lightLogo : client.logo)
-              }
-              alt={client.name}
-              width={220}
-              height={80}
-              unoptimized
-              className={`client-logo w-auto object-contain transition-all duration-300 ${(client as any).size ?? "h-16"}`}
-              style={{
-                opacity: 1,
-                filter:
-                  client.name === "Wynza Corp" ||
-                  client.name === "Keenstack Media" ||
-                  client.name === "Pata Silks"
-                    ? "none"
-                    : isDarkTheme
-                    ? (client as any).forceWhiteInDark
-                      ? "brightness(0) invert(1)"
-                      : (client as any).forceVisibility
-                      ? "drop-shadow(0 0 4px rgba(255,255,255,0.4))"
-                      : "none"
-                    : (client as any).forceBlackInLight
-                    ? "brightness(0)"
-                    : (client as any).forceVisibility
-                    ? "drop-shadow(0 0 1px rgba(0,0,0,0.8)) drop-shadow(0 0 4px rgba(0,0,0,0.2)) contrast(1.2) brightness(0.9)"
-                    : "contrast(1.1) brightness(0.95)",
-              }}
-            />
-          ))}
+          {doubled.map((client, i) => {
+            const imgSrc =
+              client.name === "Wynza Corp"
+                ? wynzaUrl
+                : client.name === "Keenstack Media"
+                ? keenstackUrl
+                : client.name === "Pata Silks"
+                ? pataUrl
+                : (!isDarkTheme && (client as any).lightLogo
+                  ? (client as any).lightLogo
+                  : client.logo);
+
+            const imgFilter =
+              client.name === "Wynza Corp" ||
+              client.name === "Keenstack Media" ||
+              client.name === "Pata Silks"
+                ? "none"
+                : isDarkTheme
+                ? (client as any).forceWhiteInDark
+                  ? "brightness(0) invert(1)"
+                  : (client as any).forceVisibility
+                  ? "drop-shadow(0 0 4px rgba(255,255,255,0.4))"
+                  : "none"
+                : (client as any).forceBlackInLight
+                ? "brightness(0)"
+                : (client as any).forceVisibility
+                ? "drop-shadow(0 0 1px rgba(0,0,0,0.8)) drop-shadow(0 0 4px rgba(0,0,0,0.2)) contrast(1.2) brightness(0.9)"
+                : "contrast(1.1) brightness(0.95)";
+
+            const img = (
+              <Image
+                src={imgSrc}
+                alt={client.name}
+                width={220}
+                height={80}
+                unoptimized
+                className={`client-logo w-auto object-contain transition-all duration-300 ${(client as any).size ?? "h-16"}`}
+                style={{ opacity: 1, filter: imgFilter }}
+              />
+            );
+
+            return (client as any).href ? (
+              <a
+                key={i}
+                href={(client as any).href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit ${client.name}`}
+                className="opacity-70 hover:opacity-100 transition-opacity duration-300 flex-shrink-0"
+              >
+                {img}
+              </a>
+            ) : (
+              <span key={i} className="flex-shrink-0">{img}</span>
+            );
+          })}
         </div>
       </div>
     </section>

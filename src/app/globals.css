@@ -14,8 +14,13 @@
   --logo-brightness: 1.8;
   --logo-contrast: 1;
   --logo-blend: screen;
+  --logo-invert: 1;
   --font-manrope: "Aptos", "Segoe UI", "Helvetica Neue", sans-serif;
   --font-outfit: "Arial Black", "Segoe UI", sans-serif;
+}
+
+[data-theme="light"] {
+  --logo-invert: 0;
 }
 
 @theme inline {
