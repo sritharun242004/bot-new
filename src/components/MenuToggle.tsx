@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useLenis } from "./LenisProvider";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -14,6 +16,8 @@ const navLinks = [
 ];
 
 export function MenuToggle() {
+  const pathname = usePathname();
+  const lenis = useLenis();
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [linksReady, setLinksReady] = useState(false);
@@ -51,17 +55,17 @@ export function MenuToggle() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
-  // Body scroll lock
+  // Body scroll lock — must stop Lenis (which bypasses CSS overflow:hidden)
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = "hidden";
+      lenis.stop();
     } else {
-      document.body.style.overflow = "";
+      lenis.start();
     }
     return () => {
-      document.body.style.overflow = "";
+      lenis.start();
     };
-  }, [open]);
+  }, [open, lenis]);
 
   // Focus trap
   useEffect(() => {
@@ -130,27 +134,27 @@ export function MenuToggle() {
           <div className="flex h-full flex-col justify-between p-5 md:p-12">
             {/* Nav links — staggered slide up */}
             <nav className="flex flex-col gap-1 pt-8">
-              {navLinks.map((link, i) => (
-                <div
-                  key={link.href}
-                  className="overflow-hidden"
-                >
-                  <Link
-                    href={link.href}
-                    onClick={handleClose}
-                    className="block text-[clamp(1.8rem,5vw,4rem)] font-[550] leading-tight tracking-[-1.5px] md:tracking-[-2.4px] text-base-300 transition-all duration-300 hover:text-base-100 hover:translate-x-3"
-                    style={{
-                      transform: linksReady
-                        ? "translateY(0%)"
-                        : "translateY(110%)",
-                      opacity: linksReady ? 1 : 0,
-                      transition: `transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) ${i * 60}ms, opacity 0.5s ease ${i * 60}ms, color 0.3s`,
-                    }}
-                  >
-                    {link.label}
-                  </Link>
-                </div>
-              ))}
+              {navLinks.map((link, i) => {
+                const isActive = pathname === link.href;
+                return (
+                  <div key={link.href} className="overflow-hidden">
+                    <Link
+                      href={link.href}
+                      onClick={handleClose}
+                      className={`flex items-center gap-4 text-[clamp(1.8rem,5vw,4rem)] font-[550] leading-tight tracking-[-1.5px] md:tracking-[-2.4px] transition-all duration-300 hover:translate-x-3 ${
+                        isActive ? "text-base-100" : "text-base-300 hover:text-base-100"
+                      }`}
+                      style={{
+                        transform: linksReady ? "translateY(0%)" : "translateY(110%)",
+                        opacity: linksReady ? 1 : 0,
+                        transition: `transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) ${i * 60}ms, opacity 0.5s ease ${i * 60}ms, color 0.3s`,
+                      }}
+                    >
+                      {link.label}
+                    </Link>
+                  </div>
+                );
+              })}
             </nav>
 
             {/* Footer info — fade up */}

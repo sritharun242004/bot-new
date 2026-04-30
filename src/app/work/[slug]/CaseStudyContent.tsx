@@ -567,7 +567,7 @@ export function CaseStudyContent({ project }: { project: Project }) {
               transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 800ms",
             }}
           >
-            <CTAButton href="/contact" label="Start the conversation" />
+            <CTAButton href="/contact" label="Let's talk" />
           </div>
         </div>
       </section>

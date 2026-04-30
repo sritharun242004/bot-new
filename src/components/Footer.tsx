@@ -113,7 +113,7 @@ export function Footer() {
   return (
     <footer className="bg-base-500 px-6 pt-20 pb-8 md:px-12">
       {/* Top section */}
-      <div className="flex flex-col gap-12 md:flex-row md:justify-between">
+      <div className="flex flex-col gap-8 md:gap-12 md:flex-row md:justify-between">
         <div>
           <h3 className="text-[clamp(1.5rem,3vw,2.5rem)] font-medium tracking-[-1.2px] text-base-100">
             The Bot Company
@@ -154,7 +154,7 @@ export function Footer() {
             </a>
           ))}
         </div>
-        <p className="max-w-sm text-right text-base font-medium text-base-300">
+        <p className="max-w-sm text-left md:text-right text-base font-medium text-base-300">
           Breaking impossibilities. AI should earn its place in your workflow,
           not just fill a slide deck.
         </p>

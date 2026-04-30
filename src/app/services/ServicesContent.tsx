@@ -144,6 +144,25 @@ export function ServicesContent() {
   const phaseRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
+    const section = diffRef.current;
+    if (!section) return;
+    const items = section.querySelectorAll<HTMLElement>(".mobile-reveal");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    items.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     const observers = phaseRefs.current.map((ref, i) => {
       if (!ref) return null;
       const observer = new IntersectionObserver(
@@ -244,7 +263,7 @@ export function ServicesContent() {
       </section>
 
       {/* Differentiators */}
-      <section ref={diffRef} className="bg-base-500 py-24 px-6 md:px-12 relative overflow-hidden">
+      <section ref={diffRef} className="bg-base-500 py-0 md:py-24 px-6 md:px-12 relative overflow-hidden">
 
         {/* Background watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
@@ -260,8 +279,8 @@ export function ServicesContent() {
         <div className="mx-auto max-w-6xl relative z-10">
 
           {/* Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 pb-8 border-b border-base-400/20">
-            <div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-2 md:mb-20 pb-2 md:pb-8 border-b border-base-400/20">
+            <div className="mobile-reveal">
               <div className="flex items-center gap-4 mb-6">
                 <div className="h-px w-12 bg-base-400" />
                 <p className="text-xs uppercase tracking-[0.4em] text-base-350 font-mono">What stays consistent</p>
@@ -272,7 +291,7 @@ export function ServicesContent() {
                 className="text-[clamp(2.5rem,5vw,5rem)] font-bold tracking-[-3px] leading-[0.9] text-base-100"
               />
             </div>
-            <p className="max-w-xs text-base text-base-350 md:text-right md:pb-2 mt-4 md:mt-0">
+            <p className="mobile-reveal max-w-xs text-base text-base-350 md:text-right md:pb-2 mt-4 md:mt-0" data-delay="1">
               Three things that never change no matter the project.
             </p>
           </div>
@@ -281,7 +300,8 @@ export function ServicesContent() {
           <div className="flex flex-col">
             {differentiators.map((d, i) => (
               <div key={d.num}
-                className="group flex flex-col md:flex-row md:items-center gap-6 md:gap-16 py-12 border-b border-base-400/20 cursor-default hover:bg-base-450/20 px-6 -mx-6 rounded-3xl transition-all duration-500 relative overflow-hidden">
+                className="mobile-reveal group flex flex-col md:flex-row md:items-center gap-6 md:gap-16 py-1 md:py-12 border-b border-base-400/20 cursor-default hover:bg-base-450/20 px-6 -mx-6 rounded-3xl transition-all duration-500 relative overflow-hidden"
+                data-delay={String(i + 1)}>
 
                 {/* Hover gradient */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-3xl"

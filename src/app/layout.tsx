@@ -4,6 +4,7 @@ import { LenisProvider } from "@/components/LenisProvider";
 import { MenuToggle } from "@/components/MenuToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PageTransition } from "@/components/PageTransition";
+import { CustomCursor } from "@/components/CustomCursor";
 
 export const metadata: Metadata = {
   title: "The Bot Company | AI-Powered Bots & Automation Systems",
@@ -23,6 +24,7 @@ export default function RootLayout({
           <PageTransition>
             {children}
           </PageTransition>
+          <CustomCursor />
           <ThemeToggle />
           <MenuToggle />
         </LenisProvider>

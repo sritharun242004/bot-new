@@ -170,7 +170,7 @@ export function FeaturedWork() {
   return (
     <section className="relative bg-base-500">
       {/* Header */}
-      <div ref={headerRef} className="px-6 pt-32 pb-12 text-center md:px-12">
+      <div ref={headerRef} className="px-6 pt-1 pb-8 md:pt-32 md:pb-12 text-center md:px-12">
         <p className="reveal-up text-base font-medium text-base-350">
           Featured work
         </p>

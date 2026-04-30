@@ -219,8 +219,8 @@ function FAQ1() {
 
   useEffect(() => {
     if (typeof window === "undefined") { setHasEntered(true); return; }
-    let timeout: number;
-    const onLoad = () => { timeout = window.setTimeout(() => setHasEntered(true), 120); };
+    let timeout: ReturnType<typeof globalThis.setTimeout>;
+    const onLoad = () => { timeout = globalThis.setTimeout(() => setHasEntered(true), 120); };
     if (document.readyState === "complete") { onLoad(); }
     else { window.addEventListener("load", onLoad, { once: true }); }
     return () => { window.removeEventListener("load", onLoad); window.clearTimeout(timeout); };
