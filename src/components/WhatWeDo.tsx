@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useReveal } from "@/hooks/useReveal";
 
 const services = [
@@ -13,17 +14,58 @@ const services = [
   "SaaS Products",
 ];
 
+const words: { word: string; accent?: boolean }[] = [
+  { word: "We" }, { word: "build" }, { word: "bots" }, { word: "that" },
+  { word: "think" }, { word: "not" }, { word: "just" }, { word: "respond." },
+  { word: "Strategy", accent: true }, { word: "that" }, { word: "finds" },
+  { word: "real" }, { word: "opportunities." },
+  { word: "Implementation", accent: true }, { word: "that" }, { word: "ships." },
+  { word: "Partnership", accent: true }, { word: "that" }, { word: "scales." },
+];
+
 export function WhatWeDo() {
   const ref = useReveal();
+  const sectionRef = useRef<HTMLElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+      const windowHeight = window.innerHeight;
+      const progress = (window.scrollY - sectionTop + windowHeight * 0.6) / (sectionHeight * 0.4);
+      setScrollProgress(Math.min(1, Math.max(0, progress)));
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <section className="bg-base-500 px-6 min-h-screen flex flex-col justify-center transition-colors duration-300 py-20">
+    <section
+      ref={sectionRef}
+      className="bg-base-500 px-6 min-h-screen flex flex-col justify-center transition-colors duration-300 py-20"
+    >
       <div className="mx-auto max-w-none text-left">
-        <h2 className="text-[clamp(2rem,7vw,8.5rem)] font-medium leading-[1.1] tracking-[-1px] text-left text-base-100 indent-[1em] md:indent-[3em] max-w-none">
-          We build bots that think not just respond. <span className="text-base-300">Strategy</span> that finds real opportunities. <span className="text-base-300">Implementation</span> that ships. <span className="text-base-300">Partnership</span> that scales.
+        <h2 className="text-[clamp(2rem,7vw,8.5rem)] font-medium leading-[1.1] tracking-[-1px] text-left indent-[1em] md:indent-[3em] max-w-none">
+          {words.map((item, i) => (
+            <span
+              key={i}
+              style={{
+                color:
+                  scrollProgress > i / words.length
+                    ? item.accent ? "var(--base-300)" : "var(--base-100)"
+                    : "var(--base-400)",
+                transition: "color 0.3s ease",
+              }}
+            >
+              {item.word}{" "}
+            </span>
+          ))}
         </h2>
 
-        {/* Sub-section matching Image 7 style */}
         <div ref={ref} className="mt-28 md:mt-40 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 text-left">
           <div>
             <p className="reveal-up text-lg font-medium text-base-100 opacity-60 mb-8">

@@ -34,7 +34,7 @@ const logos: Logo[] = [
 const doubled = [...logos, ...logos];
 const SPEED = 80;
 
-// Only recolours dark pixels — leaves coloured pixels untouched (same as ClientMarquee)
+// Dark mode: dark pixels → white. Light mode: light/white pixels → black. Coloured pixels untouched.
 function recolourLogo(src: string, toWhite: boolean): Promise<string> {
   return new Promise((resolve) => {
     const img = new window.Image();
@@ -46,11 +46,14 @@ function recolourLogo(src: string, toWhite: boolean): Promise<string> {
       ctx.drawImage(img, 0, 0);
       const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const d = data.data;
-      const target = toWhite ? 255 : 0;
       for (let i = 0; i < d.length; i += 4) {
         const r = d[i], g = d[i + 1], b = d[i + 2], a = d[i + 3];
-        if (a > 0 && r < 80 && g < 80 && b < 80) {
-          d[i] = target; d[i + 1] = target; d[i + 2] = target;
+        if (a > 0) {
+          if (toWhite && r < 80 && g < 80 && b < 80) {
+            d[i] = 255; d[i + 1] = 255; d[i + 2] = 255;
+          } else if (!toWhite && r > 200 && g > 200 && b > 200) {
+            d[i] = 0; d[i + 1] = 0; d[i + 2] = 0;
+          }
         }
       }
       ctx.putImageData(data, 0, 0);
@@ -131,11 +134,7 @@ export function LogoGrid() {
 
   // Canvas recolouring for Keenstack (mixed-colour logo — CSS invert would corrupt colours)
   useEffect(() => {
-    if (isDark) {
-      recolourLogo("/logos/keenstack.png", true).then(setKeenstackUrl);
-    } else {
-      setKeenstackUrl("/logos/keenstack.png");
-    }
+    recolourLogo("/logos/keenstack.png", isDark).then(setKeenstackUrl);
   }, [isDark]);
 
   // Cache halfWidth on mount and on resize — never reads scrollWidth inside the RAF loop

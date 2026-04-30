@@ -10,7 +10,6 @@ export function Hero() {
     const el = ref.current;
     if (!el) return;
 
-    // Reveal all elements after a short delay for the initial paint
     const timer = setTimeout(() => {
       el.querySelectorAll(".line-inner, .reveal-up").forEach((t) => {
         t.classList.add("revealed");

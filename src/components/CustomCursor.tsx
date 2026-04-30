@@ -8,7 +8,10 @@ export function CustomCursor() {
 
   useEffect(() => {
     // Only show on devices with a fine pointer (mouse), not touch screens
-    setIsTouch(!window.matchMedia("(pointer: fine)").matches);
+    const isFine = window.matchMedia("(pointer: fine)").matches;
+    setIsTouch(!isFine);
+
+    if (isFine) document.documentElement.style.cursor = "none";
 
     const move = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
     window.addEventListener("mousemove", move);
@@ -21,6 +24,7 @@ export function CustomCursor() {
     return () => {
       window.removeEventListener("mousemove", move);
       observer.disconnect();
+      document.documentElement.style.cursor = "";
     };
   }, []);
 

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLenis } from "./LenisProvider";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -16,6 +17,7 @@ const navLinks = [
 
 export function MenuToggle() {
   const pathname = usePathname();
+  const lenis = useLenis();
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [linksReady, setLinksReady] = useState(false);
@@ -53,17 +55,17 @@ export function MenuToggle() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
-  // Body scroll lock
+  // Body scroll lock — must stop Lenis (which bypasses CSS overflow:hidden)
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = "hidden";
+      lenis.stop();
     } else {
-      document.body.style.overflow = "";
+      lenis.start();
     }
     return () => {
-      document.body.style.overflow = "";
+      lenis.start();
     };
-  }, [open]);
+  }, [open, lenis]);
 
   // Focus trap
   useEffect(() => {
